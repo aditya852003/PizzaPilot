@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState } from 'react';
@@ -34,26 +32,26 @@ export default function ProfileButton({ user, onSetLocationClick }: ProfileButto
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full bg-card/100 hover:bg-card/50 border-primary/20 text-white hover:text-white">
+        <Button variant="outline" size="icon" className="rounded-full bg-card/100 hover:bg-card/50 border-primary/20 text-white hover:text-white shadow-lg">
           <UserIcon />
           <span className="sr-only">Open user profile</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 bg-card border-primary/20 text-card-foreground p-0">
+      <PopoverContent className="w-64 bg-card/100 border-primary/20 text-card-foreground p-0 shadow-2xl" align="end">
         <div className="p-4">
             <h4 className="font-semibold truncate">{user.name}</h4>
             <p className="text-sm text-muted-foreground truncate">{user.email}</p>
         </div>
         <Separator />
         <div className="p-2 flex flex-col gap-1">
-            <Button variant="ghost" onClick={() => { onSetLocationClick(); setOpen(false); }} className="w-full justify-start">
-                <MapPin className="mr-2 h-4 w-4" />
+            <Button variant="ghost" onClick={() => { onSetLocationClick(); setOpen(false); }} className="w-full justify-start hover:bg-primary/10">
+                <MapPin className="mr-2 h-4 w-4 text-primary" />
                 Set Delivery Location
             </Button>
             {isAdmin && (
-                <Button asChild variant="ghost" className="w-full justify-start" onClick={() => setOpen(false)}>
+                <Button asChild variant="ghost" className="w-full justify-start hover:bg-primary/10" onClick={() => setOpen(false)}>
                     <Link href="/admin/orders">
-                        <Shield className="mr-2 h-4 w-4" />
+                        <Shield className="mr-2 h-4 w-4 text-primary" />
                         Admin Dashboard
                     </Link>
                 </Button>
@@ -68,5 +66,3 @@ export default function ProfileButton({ user, onSetLocationClick }: ProfileButto
     </Popover>
   );
 }
-
-    

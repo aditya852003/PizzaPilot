@@ -41,23 +41,23 @@ export default function AdminLoginPage() {
                 </>
             )}
 
-            <div className="flex items-center justify-center mb-6">
+            <div className="flex items-center justify-center mb-8">
                 <PizzaPilotIcon className="w-12 h-12 mr-4" />
                 <h1 className="text-4xl font-headline text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>
                     PizzaPilot
                 </h1>
             </div>
 
-            <Card className="w-full max-w-lg bg-card border-primary/20">
-                <CardHeader className="text-center p-6">
-                    <CardTitle className="font-headline text-2xl">
+            <Card className="w-full max-w-md bg-card/100 border-primary/20 shadow-2xl">
+                <CardHeader className="text-center p-6 sm:p-8">
+                    <CardTitle className="font-headline text-2xl sm:text-3xl">
                         Owner Dashboard
                     </CardTitle>
                     <CardDescription>
                         Sign in to manage your restaurant.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 px-6 pt-0 pb-6">
+                <CardContent className="space-y-6 px-6 sm:px-8 pt-0 pb-6 sm:pb-8">
                     <SignInForm onSwitchToSignUp={() => {}} showSignUpLink={false} />
                 </CardContent>
             </Card>

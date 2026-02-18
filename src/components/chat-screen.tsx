@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -31,7 +30,6 @@ interface ChatScreenProps {
 
 const getImage = (id: string) => PlaceHolderImages.find(p => p.id === id);
 
-// Response variations
 const initialMessages = (name: string) => {
     const messages = [
         `Hey ${name}, PizzaPilot here! 🚀 Ready to order? Just tell me what you're craving.`,
@@ -125,7 +123,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
       if (suggestedItem && !outOfStockItems.has(suggestedItem.id)) {
         addMessage({
             type: 'suggestion',
-            text: '', // This is blank because the card has all the info
+            text: '',
             suggestion: {
                 suggestion: result.suggestion,
                 reasoning: result.reasoning,
@@ -179,13 +177,11 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
   
   const handleSuggestionResponse = (accepted: boolean, suggestionText: string) => {
     setMessages(prev => prev.filter(m => m.type !== 'suggestion'));
-
     const suggestedItem = ALL_MENU_ITEMS.find(i => i.name.toLowerCase() === suggestionText.toLowerCase());
-
     if (accepted && suggestedItem) {
         addItemToOrder(suggestedItem, true);
     } else if (accepted) {
-        addMessage({ type: 'bot', text: `My apologies, I can't seem to find "${suggestionText}" on my list of secret ingredients (or the menu).` });
+        addMessage({ type: 'bot', text: `My apologies, I can't seem to find "${suggestionText}" on the menu.` });
         handleConfirmOrder();
     } else {
         addMessage({ type: 'bot', text: "No worries! Your order is perfect as is." });
@@ -196,7 +192,6 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
   const handleConfirmationResponse = (addMore: boolean) => {
     setMessages(prev => prev.filter(m => m.type !== 'order_confirmation'));
     setIsConfirming(false);
-
     if (addMore) {
         addMessage({ type: 'bot', text: "Sure! What else can I get for you?" });
     } else {
@@ -207,7 +202,6 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
 
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
-
     const currentMessage = userInput;
     addMessage({ type: 'user', text: currentMessage });
     setUserInput("");
@@ -219,37 +213,30 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
     }
     
     startThinking();
-
     try {
       const result: MenuQuestionOutput = await answerMenuQuestion(currentMessage);
       stopThinking();
-
       if (!result) {
         addMessage({ type: 'bot', text: getMenuNotFoundResponse() });
         return;
       }
-
       switch (result.action) {
         case 'order':
           if (result.item?.id) {
             const itemToAdd = ALL_MENU_ITEMS.find(i => i.id === result.item.id);
             if (itemToAdd) {
-              // The addItemToOrder function handles all logic including confirmation messages and upsells.
               addItemToOrder(itemToAdd);
             } else {
               addMessage({ type: 'bot', text: `My apologies, I couldn't find "${result.item.name}" on the menu.` });
             }
           } else {
-            // If action is 'order' but no item is returned, treat as a question.
             addMessage({ type: 'bot', text: result.answer });
           }
           break;
-        
         case 'answer':
         case 'not_found':
           addMessage({ type: 'bot', text: result.answer });
           break;
-        
         default:
           addMessage({ type: 'bot', text: getMenuNotFoundResponse() });
           break;
@@ -257,7 +244,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
     } catch (error) {
         console.error("Error processing message:", error);
         stopThinking();
-        addMessage({ type: 'bot', text: "I'm having a little trouble right now. Please try asking in a different way or select an item from the menu." });
+        addMessage({ type: 'bot', text: "I'm having a little trouble. Try selecting an item from the menu." });
     }
   };
 
@@ -271,8 +258,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
     if (cart.length > 0 && !isThinking && messages[messages.length-1]?.type !== 'order_confirmation' && messages[messages.length-1]?.type !== 'suggestion' && !isConfirming) {
         handleConfirmOrder();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[cart, isThinking, messages.length]);
+  },[cart, isThinking, messages.length, handleConfirmOrder, isConfirming, messages]);
 
 
   useEffect(() => {
@@ -280,17 +266,16 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
       addMessage({ type: 'bot', text: initialMessages(user.name) });
       initialMessageSent.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user.name]);
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="flex flex-col md:grid md:grid-cols-3 gap-6 p-4 md:p-6 h-full">
-      <div className="md:col-span-2 flex flex-col h-3/5 md:h-auto md:flex-1 min-h-0">
-        <h2 className="font-headline text-2xl mb-4 px-2">Order Assistant</h2>
-        <Card className="flex-1 flex flex-col bg-card/100 overflow-hidden">
-          <CardContent className="flex-1 p-0 relative">
+    <div className="flex flex-col md:grid md:grid-cols-3 gap-6 p-4 md:p-6 h-full overflow-hidden">
+      <div className="md:col-span-2 flex flex-col h-full min-h-0">
+        <h2 className="font-headline text-2xl mb-4 px-2 shrink-0">Order Assistant</h2>
+        <Card className="flex-1 flex flex-col bg-card/100 border-primary/20 shadow-lg overflow-hidden min-h-0">
+          <CardContent className="flex-1 p-0 relative min-h-0">
             <ScrollArea className="absolute inset-0 p-4" ref={scrollAreaRef}>
               <AnimatePresence>
                 {messages.map((message) => (
@@ -307,10 +292,9 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                     )}
                   >
                     {message.type !== "user" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>}
-                    <div className={cn("max-w-md rounded-lg shadow-md", 
-                        message.type === 'user' ? 'bg-primary text-primary-foreground px-4 py-2' : 'bg-secondary text-secondary-foreground',
+                    <div className={cn("max-w-md rounded-lg shadow-md bg-card/100", 
+                        message.type === 'user' ? 'bg-primary text-primary-foreground px-4 py-2' : 'bg-secondary text-secondary-foreground border border-border',
                         message.type === 'suggestion' ? 'special-offer animate-spicy-pulse p-0 overflow-hidden w-full' : 'px-4 py-2',
-                        message.type === 'order_confirmation' ? 'w-full' : ''
                     )}>
                         { message.type !== 'suggestion' && <p className="text-base whitespace-pre-line">{message.text}</p>}
                         
@@ -329,8 +313,8 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                                         />
                                     )}
                                     <div className="p-4">
-                                        <p className="font-bold text-lg flex items-center gap-2"><Sparkles size={18} /> How about some {message.suggestion.suggestion}?</p>
-                                        <p className="text-sm italic mt-1 opacity-90">{message.suggestion.reasoning}</p>
+                                        <p className="font-bold text-lg flex items-center gap-2 text-white"><Sparkles size={18} /> How about some {message.suggestion.suggestion}?</p>
+                                        <p className="text-sm italic mt-1 text-white/90">{message.suggestion.reasoning}</p>
                                         <div className="flex flex-col sm:flex-row gap-2 mt-3">
                                             <Button size="sm" variant="outline" className="w-full sm:flex-1 bg-white/10 border-white/20 hover:bg-white/20 text-white" onClick={() => handleSuggestionResponse(true, message.suggestion.suggestion)}>
                                                 <ThumbsUp size={16}/> Yes, please!
@@ -347,11 +331,11 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                         {message.type === 'order_confirmation' && (
                            <div className="mt-2 border-t border-secondary-foreground/20 pt-2">
                                 <div className="flex flex-col sm:flex-row gap-2 mt-3">
-                                    <Button size="sm" variant="outline" className="w-full sm:w-auto border-border hover:bg-accent/20" onClick={() => handleConfirmationResponse(true)}>
-                                        <Plus size={16}/> Yes, add more
+                                    <Button size="sm" variant="outline" className="w-full sm:flex-1 border-border hover:bg-accent/20" onClick={() => handleConfirmationResponse(true)}>
+                                        <Plus size={16}/> Add more
                                     </Button>
-                                    <Button size="sm" className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white" onClick={() => handleConfirmationResponse(false)}>
-                                        <ArrowRight size={16}/> Proceed to Bill
+                                    <Button size="sm" className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleConfirmationResponse(false)}>
+                                        <ArrowRight size={16}/> Checkout
                                     </Button>
                                 </div>
                            </div>
@@ -362,24 +346,24 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                 {isThinking && (
                      <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-3 mb-4 justify-start">
                         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>
-                        <div className="bg-secondary rounded-lg px-4 py-3 flex items-center gap-2">
+                        <div className="bg-secondary rounded-lg px-4 py-3 flex items-center gap-2 border border-border">
                             <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse [animation-delay:-0.3s]" />
                             <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse [animation-delay:-0.15s]" />
                             <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse" />
-                            <p className="text-muted-foreground pl-2">{thinkingMessage}</p>
+                            <p className="text-muted-foreground pl-2 text-sm">{thinkingMessage}</p>
                         </div>
                     </motion.div>
                 )}
               </AnimatePresence>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-4 border-t">
+          <CardFooter className="p-4 border-t bg-card/100 shrink-0">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
                 await handleSendMessage();
               }}
-              className="flex w-full items-center gap-2"
+              className="flex w-full items-center gap-2 pt-2"
             >
               <Input
                 type="text"
@@ -387,7 +371,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 disabled={isThinking}
-                className="flex-1 text-base"
+                className="flex-1 text-base bg-secondary"
               />
               <Button type="submit" size="icon" disabled={isThinking || !userInput.trim()}>
                 <Send size={20} />
@@ -397,41 +381,42 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
         </Card>
       </div>
 
-      <div className="md:col-span-1 flex flex-col h-2/5 md:h-auto md:flex-1 min-h-0">
-        <div className="flex justify-end items-center mb-4 px-2">
+      <div className="md:col-span-1 flex flex-col h-full min-h-0">
+        <div className="flex justify-between items-center mb-4 px-2 shrink-0">
+            <h2 className="font-headline text-xl">Order Summary</h2>
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <SheetTrigger asChild>
-                    <Button variant="outline">
+                    <Button variant="outline" size="sm" className="border-primary/20">
                         <MenuIcon className="mr-2 h-4 w-4" />
-                        View Menu
+                        Menu
                     </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
-                    <SheetHeader className="px-6 pt-6">
+                <SheetContent className="w-full sm:max-w-md flex flex-col bg-card/100">
+                    <SheetHeader className="px-6 pt-6 shrink-0">
                         <SheetTitle className="font-headline text-3xl">Our Menu</SheetTitle>
                         <SheetDescription>
-                            Click on any item to add it to your order. Items in gray are out of stock.
+                            Tap an item to add it to your order.
                         </SheetDescription>
                     </SheetHeader>
-                    <ScrollArea className="flex-1 px-6">
+                    <ScrollArea className="flex-1 px-6 mt-4">
                        <Accordion type="multiple" defaultValue={CATEGORIZED_MENU.map(c => c.title)} className="w-full">
                             {CATEGORIZED_MENU.map((category) => (
-                                <AccordionItem value={category.title} key={category.title}>
-                                    <AccordionTrigger className="text-xl font-headline">{category.title}</AccordionTrigger>
+                                <AccordionItem value={category.title} key={category.title} className="border-border">
+                                    <AccordionTrigger className="text-lg font-headline hover:no-underline">{category.title}</AccordionTrigger>
                                     <AccordionContent>
-                                        <div className="grid grid-cols-2 gap-4 py-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 py-2">
                                             {category.items.map((item) => {
                                                 const img = getImage(item.image);
                                                 const isOutOfStock = outOfStockItems.has(item.id);
                                                 return (
-                                                    <Card key={item.id} className={cn("overflow-hidden transition-all group", isOutOfStock ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-primary")} onClick={() => { if(!isOutOfStock) { addItemToOrder(item); setIsMenuOpen(false); }}}>
-                                                        <div className="relative">
-                                                            {img && <Image src={img.imageUrl} alt={item.name} width={400} height={300} className={cn("w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300", isOutOfStock && "grayscale")} data-ai-hint={img.imageHint} />}
-                                                            {isOutOfStock && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-white font-bold bg-destructive px-2 py-1 rounded">OUT OF STOCK</span></div>}
+                                                    <Card key={item.id} className={cn("overflow-hidden transition-all group border-primary/10", isOutOfStock ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-primary")} onClick={() => { if(!isOutOfStock) { addItemToOrder(item); setIsMenuOpen(false); }}}>
+                                                        <div className="relative aspect-video">
+                                                            {img && <Image src={img.imageUrl} alt={item.name} fill className={cn("object-cover group-hover:scale-105 transition-transform duration-300", isOutOfStock && "grayscale")} data-ai-hint={img.imageHint} />}
+                                                            {isOutOfStock && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-white text-xs font-bold bg-destructive px-2 py-1 rounded">SOLD OUT</span></div>}
                                                         </div>
-                                                        <CardHeader className="p-3">
-                                                            <CardTitle className="text-base font-headline">{item.name}</CardTitle>
-                                                            <p className="text-primary font-bold text-sm">₹{item.price.toFixed(2)}</p>
+                                                        <CardHeader className="p-2 space-y-1">
+                                                            <CardTitle className="text-sm font-headline line-clamp-1">{item.name}</CardTitle>
+                                                            <p className="text-primary font-bold text-xs">₹{item.price.toFixed(2)}</p>
                                                         </CardHeader>
                                                     </Card>
                                                 )
@@ -446,26 +431,26 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </Sheet>
         </div>
         
-        <Card className="bg-card/100 flex-1 flex flex-col min-h-0">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-headline"><ShoppingCart />Your order</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 flex-1">
-            <ScrollArea className="h-full px-6">
+        <Card className="bg-card/100 border-primary/20 shadow-lg flex-1 flex flex-col min-h-0 overflow-hidden">
+          <CardContent className="p-0 flex-1 min-h-0 relative">
+            <ScrollArea className="absolute inset-0 px-4">
                 {cart.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">Your cart is empty. Browse the menu to get started!</p>
+                    <div className="flex flex-col items-center justify-center h-full text-center py-12 opacity-50">
+                        <ShoppingCart size={48} className="mb-2" />
+                        <p className="text-sm">Browse the menu to start your order!</p>
+                    </div>
                 ) : (
                     <div className="space-y-4 py-4">
                         {cart.map(item => (
-                            <div key={item.id} className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-semibold">{item.name}</p>
-                                    <p className="text-sm text-muted-foreground">₹{item.price.toFixed(2)}</p>
+                            <div key={item.id} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-secondary/50 border border-border/50">
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-sm truncate">{item.name}</p>
+                                    <p className="text-xs text-primary font-mono">₹{item.price.toFixed(2)}</p>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, -1)}><Minus size={14}/></Button>
-                                    <span className="w-6 text-center font-bold">{item.quantity}</span>
-                                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, 1)}><Plus size={14}/></Button>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, -1)}><Minus size={12}/></Button>
+                                    <span className="w-4 text-center text-sm font-bold">{item.quantity}</span>
+                                    <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, 1)}><Plus size={12}/></Button>
                                 </div>
                             </div>
                         ))}
@@ -474,20 +459,21 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </ScrollArea>
           </CardContent>
           {cart.length > 0 && (
-            <CardFooter className="flex-col items-stretch p-4 border-t space-y-4">
+            <CardFooter className="flex-col items-stretch p-4 border-t bg-secondary/30 shrink-0 gap-4">
                 <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>₹{total.toFixed(2)}</span>
+                    <span className="text-primary">₹{total.toFixed(2)}</span>
                 </div>
-                {isConfirming ? (
-                    <Button className="w-full text-lg py-6 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleConfirmationResponse(false)}>
-                        Proceed to Bill <ArrowRight />
-                    </Button>
-                ) : (
-                    <Button className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground" onClick={handleConfirmOrder} disabled={cart.length === 0}>
-                        Place Order <ArrowRight />
-                    </Button>
-                )}
+                <Button 
+                  className={cn(
+                    "w-full text-lg py-6 transition-all",
+                    isConfirming ? "bg-green-600 hover:bg-green-700 text-white" : "bg-accent hover:bg-accent/90 text-accent-foreground"
+                  )} 
+                  onClick={isConfirming ? () => handleConfirmationResponse(false) : handleConfirmOrder} 
+                  disabled={cart.length === 0}
+                >
+                    {isConfirming ? "Confirm & Pay" : "Review Order"} <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
             </CardFooter>
           )}
         </Card>

@@ -43,31 +43,26 @@ export default function Home() {
 
   useEffect(() => {
     if (isUserLoading || (firebaseUser && isProfileLoading)) {
-      // Still loading, do nothing
       return;
     }
     
     if (!userProfile || !firebaseUser) {
-      // If we've finished loading and there's no user, reset to AUTH state.
       if (appState !== 'AUTH') {
           setActiveUser(null);
           setBillOrder([]);
           setCart([]);
           setTrackingOrderId(null);
           setAppState("AUTH");
-          setHasShownLocationPopup(false); // Reset for next login
+          setHasShownLocationPopup(false);
       }
     } else if (userProfile) {
-      // We have a user, set them as active.
       setActiveUser(userProfile);
-      // If the user is logged in but we are on the AUTH screen, move them to ORDERING.
       if (appState === 'AUTH') {
         setAppState("ORDERING");
       }
     }
   }, [firebaseUser, userProfile, isUserLoading, isProfileLoading, appState]);
 
-  // Pop up location dialog if address isn't set for a logged in user
   useEffect(() => {
     if (activeUser && !address && !hasShownLocationPopup) {
       setIsLocationDialogOpen(true);
@@ -131,7 +126,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative flex flex-col min-h-screen items-center p-4 sm:p-8 print:p-0">
+    <main className="relative flex flex-col min-h-screen items-center p-4 sm:p-8 print:p-0 overflow-x-hidden">
        {bgImage && (
         <>
           <Image
@@ -144,10 +139,9 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-black/70 z-[-1] print:hidden" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,black)] z-[-1] print:hidden" />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1/2 bg-accent/10 rounded-full blur-3xl z-[-1]" />
         </>
       )}
-      <header className="z-10 w-full flex justify-between items-center print:hidden mb-4 md:mb-8">
+      <header className="z-10 w-full flex justify-between items-center print:hidden mb-4 md:mb-8 shrink-0">
         <div className="flex items-center justify-start">
           <h1 className="text-4xl sm:text-5xl font-headline text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>
             PizzaPilot
@@ -158,21 +152,26 @@ export default function Home() {
         </div>
       </header>
       
-      <div className={`relative w-full z-10 transition-all duration-300 flex-1 flex flex-col justify-center ${appState === 'ORDERING' ? 'max-w-5xl' : 'max-w-lg'} print:max-w-full print:w-full`}>
+      <div className={cn(
+        "relative w-full z-10 transition-all duration-300 flex-1 flex flex-col",
+        appState === 'AUTH' ? "justify-center items-center" : "justify-start"
+      )}>
         <div className={cn(
           "relative mx-auto rounded-xl border-2 border-primary/20 bg-card shadow-2xl shadow-accent/20 overflow-hidden print:border-none print:shadow-none print:bg-card flex flex-col w-full",
-          appState === 'ORDERING' && "flex-1"
+          appState === 'ORDERING' ? "max-w-5xl h-[calc(100vh-180px)]" : "max-w-md",
+          appState === 'AUTH' && "my-auto"
         )}>
           {renderState()}
         </div>
       </div>
+
       <LocationDialog
         open={isLocationDialogOpen}
         onOpenChange={setIsLocationDialogOpen}
         address={address}
         setAddress={setAddress}
        />
-      <footer className="text-center text-sm text-white/70 print:hidden mt-8">
+      <footer className="text-center text-sm text-white/70 print:hidden mt-8 shrink-0">
           <p>
             MIT License
             <br />
