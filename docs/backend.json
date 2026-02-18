@@ -1,0 +1,148 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the PizzaPilot application.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the user entity." },
+        "name": { "type": "string", "description": "User's full name." },
+        "phoneNumber": { "type": "string", "description": "User's phone number." },
+        "email": { "type": "string", "description": "User's email address.", "format": "email" },
+        "role": { "type": "string", "description": "User's role in the system.", "enum": ["customer", "owner"] },
+        "stripeId": { "type": "string", "description": "The user's Stripe Customer ID." },
+        "stripeLink": { "type": "string", "description": "A link to the user's Stripe customer portal." }
+      },
+      "required": ["id", "role"]
+    },
+    "Order": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Order",
+      "type": "object",
+      "description": "Represents a pizza order placed by a user.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the order entity." },
+        "userId": { "type": "string", "description": "Reference to User who placed the order." },
+        "orderDate": { "type": "string", "description": "Date and time when the order was placed.", "format": "date-time" },
+        "totalAmount": { "type": "number", "description": "Total amount for the order." },
+        "paymentMethod": { "type": "string", "description": "Payment method used for the order (cash/online)." },
+        "status": { "type": "string", "description": "The current status of the order.", "enum": ["pending", "preparing", "out for delivery", "delivered", "cancelled"] },
+        "items": {
+          "type": "array",
+          "description": "A list of items included in the order.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "description": "Menu item ID." },
+              "name": { "type": "string" },
+              "price": { "type": "number" },
+              "quantity": { "type": "number" }
+            },
+            "required": ["id", "name", "price", "quantity"]
+          }
+        }
+      },
+      "required": ["id", "userId", "orderDate", "totalAmount", "paymentMethod", "status", "items"]
+    },
+    "InventoryItem": {
+        "title": "Inventory Item",
+        "description": "Represents the stock status of a menu item.",
+        "type": "object",
+        "properties": {
+          "itemId": { "type": "string", "description": "The ID of the menu item." },
+          "inStock": { "type": "boolean", "description": "Whether the item is currently in stock." },
+          "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp of the last stock update."}
+        },
+        "required": ["itemId", "inStock"]
+    },
+    "RestaurantMetadata": {
+        "title": "Restaurant Metadata",
+        "description": "Configuration and details for the restaurant.",
+        "type": "object",
+        "properties": {
+            "restaurantName": { "type": "string" },
+            "contactInfo": { "type": "string" }
+        }
+    },
+    "Product": {
+      "title": "Stripe Product",
+      "description": "A product in Stripe.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "active": { "type": "boolean" }
+      }
+    },
+    "Price": {
+      "title": "Stripe Price",
+      "description": "A price for a product in Stripe.",
+      "type": "object",
+      "properties": {
+        "unit_amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "active": { "type": "boolean" }
+      }
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Represents a user's subscription status.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["active", "cancelled", "expired"]
+        },
+        "current_period_end": { "type": "string", "format": "date-time" },
+        "planId": { "type": "string", "enum": ["basic", "pro"] },
+        "planName": { "type": "string" },
+        "price": { "type": "number" }
+      },
+      "required": ["status", "current_period_end", "planId", "planName", "price"]
+    },
+    "CheckoutSession": {
+        "title": "Checkout Session",
+        "description": "A Stripe Checkout Session document.",
+        "type": "object",
+        "properties": {
+            "price": { "type": "string" },
+            "success_url": { "type": "string" },
+            "cancel_url": { "type": "string" },
+            "url": { "type": "string" },
+            "error": { "type": "object", "properties": { "message": {"type": "string"}}}
+        }
+    }
+  },
+  "auth": {
+    "providers": ["password", "anonymous", "google.com"]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": { "entityName": "User", "schema": { "$ref": "#/entities/User" }, "description": "Stores user profile information, including their role and Stripe customer data." }
+      },
+      {
+        "path": "/users/{userId}/subscriptions/{subscriptionId}",
+        "definition": { "entityName": "Subscription", "schema": { "$ref": "#/entities/Subscription" }, "description": "Stores user subscription information." }
+      },
+      {
+        "path": "/users/{userId}/checkout_sessions/{sessionId}",
+        "definition": { "entityName": "CheckoutSession", "schema": { "$ref": "#/entities/CheckoutSession" }, "description": "Used to initiate Stripe checkout sessions for a user." }
+      },
+      {
+        "path": "/orders/{orderId}",
+        "definition": { "entityName": "Order", "schema": { "$ref": "#/entities/Order" }, "description": "A shared collection storing all customer orders." }
+      },
+      {
+          "path": "/inventory/{itemId}",
+          "definition": { "entityName": "InventoryItem", "schema": { "$ref": "#/entities/InventoryItem" }, "description": "Manages stock levels for each menu item." }
+      },
+      {
+          "path": "/metadata/restaurant",
+          "definition": { "entityName": "RestaurantMetadata", "schema": { "$ref": "#/entities/RestaurantMetadata" }, "description": "Singleton document for restaurant configuration."}
+      }
+    ]
+  }
+}

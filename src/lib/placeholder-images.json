@@ -1,0 +1,130 @@
+{
+  "placeholderImages": [
+    {
+      "id": "margherita-pizza",
+      "description": "A classic margherita pizza with fresh tomatoes and basil.",
+      "imageUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXJnaGVyaXRhJTIwcGl6emF8ZW58MHx8fHwxNzcwMTA3NjAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "margherita pizza"
+    },
+    {
+      "id": "pepperoni-pizza",
+      "description": "A pepperoni pizza with a crispy crust.",
+      "imageUrl": "https://images.unsplash.com/photo-1605478371310-a9f1e96b4ff4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXBwZXJvbmklMjBwaXp6YXxlbnwwfHx8fDE3NzAxMDc2MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pepperoni pizza"
+    },
+    {
+      "id": "veggie-pizza",
+      "description": "A veggie supreme pizza loaded with fresh vegetables.",
+      "imageUrl": "https://images.unsplash.com/photo-1590947132387-155cc02f3212?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx2ZWdnaWUlMjBwaXp6YXxlbnwwfHx8fDE3NzAxMzQ4MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "veggie pizza"
+    },
+    {
+      "id": "hawaiian-pizza",
+      "description": "A controversial but delicious hawaiian pizza.",
+      "imageUrl": "https://images.unsplash.com/photo-1671572580758-fd91620a1c6d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxoYXdhaWlhbiUyMHBpenphfGVufDB8fHx8MTc3MDEwNzYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hawaiian pizza"
+    },
+    {
+      "id": "paneer-tikka-pizza",
+      "description": "A delicious paneer tikka pizza.",
+      "imageUrl": "https://images.unsplash.com/photo-1607556723228-5fe745427b86?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "paneer pizza"
+    },
+    {
+      "id": "farmhouse-pizza",
+      "description": "A farmhouse pizza with fresh vegetables.",
+      "imageUrl": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "farmhouse pizza"
+    },
+    {
+      "id": "chicken-supreme-pizza",
+      "description": "A chicken supreme pizza with all the toppings.",
+      "imageUrl": "https://images.unsplash.com/photo-1627443491425-a876a38210b4?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "chicken pizza"
+    },
+    {
+      "id": "bbq-chicken-pizza",
+      "description": "A delicious BBQ chicken pizza.",
+      "imageUrl": "https://images.unsplash.com/photo-1565299585323-28d1033b096c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "bbq pizza"
+    },
+    {
+      "id": "cheese-garlic-bread",
+      "description": "Cheesy garlic bread sticks.",
+      "imageUrl": "https://images.unsplash.com/photo-1627443491425-a876a38210b4?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "cheesy bread"
+    },
+    {
+      "id": "potato-wedges",
+      "description": "Crispy potato wedges.",
+      "imageUrl": "https://images.unsplash.com/photo-1598912425927-4b47d3a43628?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "potato wedges"
+    },
+    {
+      "id": "chicken-wings",
+      "description": "Spicy BBQ chicken wings.",
+      "imageUrl": "https://images.unsplash.com/photo-1527477396000-e27173d6c4a3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "chicken wings"
+    },
+    {
+      "id": "iced-tea",
+      "description": "A refreshing glass of iced tea.",
+      "imageUrl": "https://images.unsplash.com/photo-1556679343-c7306c19761a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "iced tea"
+    },
+    {
+      "id": "mineral-water",
+      "description": "A bottle of mineral water.",
+      "imageUrl": "https://images.unsplash.com/photo-1623512213791-a54823904943?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "water bottle"
+    },
+    {
+      "id": "fudge-brownie",
+      "description": "A rich chocolate fudge brownie.",
+      "imageUrl": "https://images.unsplash.com/photo-1597330751147-1950d9b417c8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "chocolate brownie"
+    },
+    {
+      "id": "cheesy-dip",
+      "description": "A creamy cheesy dip.",
+      "imageUrl": "https://images.unsplash.com/photo-1617364066121-8a26d640130f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtZWx0ZWQlMjBjaGVlc2V8ZW58MHx8fHwxNzcwMTQzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cheese dip"
+    },
+    {
+      "id": "jalapenos",
+      "description": "Spicy jalapeno peppers.",
+      "imageUrl": "https://images.unsplash.com/photo-1598679255291-c2525c3a9d35?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "jalapeno peppers"
+    },
+    {
+      "id": "extra-cheese",
+      "description": "Melted mozzarella cheese.",
+      "imageUrl": "https://images.unsplash.com/photo-1617364066121-8a26d640130f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtZWx0ZWQlMjBjaGVlc2V8ZW58MHx8fHwxNzcwMTQzMjYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "melted cheese"
+    },
+    {
+      "id": "coke-can",
+      "description": "A can of Coca-Cola.",
+      "imageUrl": "https://images.unsplash.com/photo-1630404365865-97ff92feba6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzb2RhJTIwY2FufGVufDB8fHx8MTc3MDE0MjAwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "soda can"
+    },
+    {
+      "id": "garlic-bread",
+      "description": "Toasted garlic bread sticks.",
+      "imageUrl": "https://images.unsplash.com/photo-1676976198546-18595f0796f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxnYXJsaWMlMjBicmVhZHxlbnwwfHx8fDE3NzAxMTg1Njd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "garlic bread"
+    },
+    {
+      "id": "choco-lava-cake",
+      "description": "A rich chocolate lava cake.",
+      "imageUrl": "https://images.unsplash.com/photo-1709195902163-7eee13e78970?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjaG9jb2xhdGUlMjBjYWtlfGVufDB8fHx8MTc3MDEwMTgxMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chocolate cake"
+    },
+    {
+      "id": "pizza-restaurant-bg",
+      "description": "A background image of a pizza restaurant.",
+      "imageUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "pizza restaurant"
+    }
+  ]
+}
