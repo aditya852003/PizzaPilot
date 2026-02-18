@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -10,8 +9,8 @@ export default function AuthScreen() {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
 
   return (
-    <Card className="border-0 shadow-none bg-transparent">
-      <CardHeader className="text-center p-4 sm:p-6 pb-2 sm:pb-2">
+    <Card className="border-primary/20 shadow-2xl bg-card overflow-hidden">
+      <CardHeader className="text-center p-6 sm:p-8 pb-4">
         <CardTitle className="font-headline text-2xl sm:text-3xl">
           {authMode === 'signin' ? 'Welcome Aboard 🍕' : 'Create Your Account'}
         </CardTitle>
@@ -19,7 +18,7 @@ export default function AuthScreen() {
           {authMode === 'signin' ? "Sign in to start your pizza order." : "Just a few details to get you started."}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 px-4 sm:px-6 pt-0 pb-4 sm:pb-6">
+      <CardContent className="space-y-4 px-6 sm:px-8 pt-0 pb-8">
         {authMode === 'signin' ? (
           <SignInForm onSwitchToSignUp={() => setAuthMode('signup')} />
         ) : (

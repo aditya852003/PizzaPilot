@@ -28,7 +28,6 @@ export default function Home() {
   const [hasShownLocationPopup, setHasShownLocationPopup] = useState(false);
   
   const { user: firebaseUser, isUserLoading } = useUser();
-  const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
 

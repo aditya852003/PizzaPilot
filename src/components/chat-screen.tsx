@@ -274,7 +274,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
     <div className="flex flex-col md:grid md:grid-cols-3 gap-6 p-4 md:p-6 h-full overflow-hidden">
       <div className="md:col-span-2 flex flex-col h-full min-h-0">
         <h2 className="font-headline text-2xl mb-4 px-2 shrink-0">Order Assistant</h2>
-        <Card className="flex-1 flex flex-col bg-card/100 border-primary/20 shadow-lg overflow-hidden min-h-0">
+        <Card className="flex-1 flex flex-col bg-card border-primary/20 shadow-lg overflow-hidden min-h-0">
           <CardContent className="flex-1 p-0 relative min-h-0">
             <ScrollArea className="absolute inset-0 p-4" ref={scrollAreaRef}>
               <AnimatePresence>
@@ -292,7 +292,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                     )}
                   >
                     {message.type !== "user" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>}
-                    <div className={cn("max-w-md rounded-lg shadow-md bg-card/100", 
+                    <div className={cn("max-w-md rounded-lg shadow-md bg-card", 
                         message.type === 'user' ? 'bg-primary text-primary-foreground px-4 py-2' : 'bg-secondary text-secondary-foreground border border-border',
                         message.type === 'suggestion' ? 'special-offer animate-spicy-pulse p-0 overflow-hidden w-full' : 'px-4 py-2',
                     )}>
@@ -357,7 +357,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
               </AnimatePresence>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-4 border-t bg-card/100 shrink-0">
+          <CardFooter className="p-4 border-t bg-card shrink-0">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -391,7 +391,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                         Menu
                     </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md flex flex-col bg-card/100">
+                <SheetContent className="w-full sm:max-w-md flex flex-col bg-card">
                     <SheetHeader className="px-6 pt-6 shrink-0">
                         <SheetTitle className="font-headline text-3xl">Our Menu</SheetTitle>
                         <SheetDescription>
@@ -431,7 +431,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </Sheet>
         </div>
         
-        <Card className="bg-card/100 border-primary/20 shadow-lg flex-1 flex flex-col min-h-0 overflow-hidden">
+        <Card className="bg-card border-primary/20 shadow-lg flex-1 flex flex-col min-h-0 overflow-hidden">
           <CardContent className="p-0 flex-1 min-h-0 relative">
             <ScrollArea className="absolute inset-0 px-4">
                 {cart.length === 0 ? (

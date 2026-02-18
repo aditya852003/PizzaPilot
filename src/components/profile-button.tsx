@@ -32,12 +32,12 @@ export default function ProfileButton({ user, onSetLocationClick }: ProfileButto
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full bg-card/100 hover:bg-card/50 border-primary/20 text-white hover:text-white shadow-lg">
+        <Button variant="outline" size="icon" className="rounded-full bg-card hover:bg-card/90 border-primary/20 text-white hover:text-white shadow-lg">
           <UserIcon />
           <span className="sr-only">Open user profile</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 bg-card/100 border-primary/20 text-card-foreground p-0 shadow-2xl" align="end">
+      <PopoverContent className="w-64 bg-card border-primary/20 text-card-foreground p-0 shadow-2xl" align="end">
         <div className="p-4">
             <h4 className="font-semibold truncate">{user.name}</h4>
             <p className="text-sm text-muted-foreground truncate">{user.email}</p>
