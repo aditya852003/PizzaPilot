@@ -10,7 +10,7 @@
     --card: 213 33% 8%; /* Fully opaque dark background */
     --card-foreground: 210 40% 98%;
 
-    --popover: 213 33% 10%;
+    --popover: 213 33% 8%; /* Fully opaque popover */
     --popover-foreground: 210 40% 98%;
 
     --primary: 3 80% 54%; /* #E6392E */

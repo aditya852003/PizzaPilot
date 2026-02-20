@@ -1,59 +1,55 @@
 import admin from 'firebase-admin';
 
-// Check if the app is already initialized to prevent re-initialization.
+/**
+ * Lazy-initializes the Firebase Admin SDK.
+ * This prevents errors during the build phase (e.g. on Vercel) 
+ * when environment variables might not be present.
+ */
 function getAdminApp() {
-  if (!admin.apps.length) {
-    // Only initialize if we have the necessary environment variables.
-    // This avoids errors during the build step on platforms like Vercel.
-    const projectId = process.env.FIREBASE_PROJECT_ID;
-    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
-
-    if (projectId && clientEmail && privateKey) {
-      try {
-        admin.initializeApp({
-          credential: admin.credential.cert({
-            projectId,
-            clientEmail,
-            privateKey: privateKey.replace(/\\n/g, '\n'),
-          }),
-        });
-      } catch (e: any) {
-        console.error('Firebase Admin SDK initialization error:', e);
-      }
-    }
+  if (admin.apps.length > 0) {
+    return admin.app();
   }
-  return admin.apps.length ? admin.app() : null;
+
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (!projectId || !clientEmail || !privateKey) {
+    // Return null instead of throwing to allow the build process to continue.
+    // Logic inside route handlers will check for initialization.
+    return null;
+  }
+
+  try {
+    return admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId,
+        clientEmail,
+        privateKey: privateKey.replace(/\\n/g, '\n'),
+      }),
+    });
+  } catch (e: any) {
+    console.error('Firebase Admin SDK initialization error:', e);
+    return null;
+  }
 }
 
-/**
- * Lazy getter for Firebase Admin Auth.
- * Returns the Auth instance or throws if the app couldn't be initialized.
- */
-export const getAdminAuth = () => {
-  const app = getAdminApp();
-  if (!app) {
-    throw new Error('Firebase Admin SDK not initialized. Ensure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY are set.');
-  }
-  return admin.auth(app);
-};
-
-/**
- * Lazy getter for Firebase Admin Firestore.
- * Returns the Firestore instance or throws if the app couldn't be initialized.
- */
-export const getAdminDb = () => {
-  const app = getAdminApp();
-  if (!app) {
-    throw new Error('Firebase Admin SDK not initialized. Ensure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY are set.');
-  }
-  return admin.firestore(app);
-};
-
 export const adminAuth = {
-    verifyIdToken: (token: string) => getAdminAuth().verifyIdToken(token)
+  verifyIdToken: async (token: string) => {
+    const app = getAdminApp();
+    if (!app) {
+      throw new Error('Firebase Admin SDK not initialized. Set env variables in Vercel.');
+    }
+    return admin.auth(app).verifyIdToken(token);
+  }
 };
 
 export const adminDb = {
-    collection: (path: string) => getAdminDb().collection(path)
+  collection: (path: string) => {
+    const app = getAdminApp();
+    if (!app) {
+      throw new Error('Firebase Admin SDK not initialized. Set env variables in Vercel.');
+    }
+    return admin.firestore(app).collection(path);
+  }
 };

@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -49,7 +48,7 @@ export function SignInForm({ onSwitchToSignUp, showSignUpLink = true }: SignInFo
   };
 
   return (
-    <div>
+    <div className="w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSignIn)} className="space-y-4">
           <FormField
@@ -78,20 +77,20 @@ export function SignInForm({ onSwitchToSignUp, showSignUpLink = true }: SignInFo
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full !mt-6 text-base py-3 bg-accent hover:bg-accent/90 text-accent-foreground">
-            <LogIn /> Sign In
+          <Button type="submit" className="w-full !mt-6 text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground">
+            <LogIn className="mr-2" /> Sign In
           </Button>
         </form>
       </Form>
       {showSignUpLink && (
-        <div className="mt-4 text-center text-xs sm:text-sm">
-            <p className="text-sm text-muted-foreground">
+        <div className="mt-6 text-center text-sm">
+            <p className="text-muted-foreground">
               New to PizzaPilot?{' '}
               <Button variant="link" className="p-0 h-auto text-primary" onClick={onSwitchToSignUp}>
                 Sign Up
               </Button>
             </p>
-            <p className="mt-2">
+            <p className="mt-3">
                 <Link href="/admin/login" className="text-sm text-primary hover:underline transition-colors">
                     Login as Admin
                 </Link>

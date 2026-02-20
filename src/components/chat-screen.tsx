@@ -357,7 +357,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
               </AnimatePresence>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-4 border-t bg-card shrink-0">
+          <CardFooter className="p-6 border-t bg-card shrink-0">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
