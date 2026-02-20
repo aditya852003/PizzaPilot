@@ -25,7 +25,7 @@ export default function AdminLoginPage() {
     }
 
     return (
-        <main className="relative flex flex-col min-h-screen items-center justify-center p-4 bg-background">
+        <main className="relative flex flex-col min-h-screen items-center justify-center p-4 bg-background overflow-hidden">
             {bgImage && (
                 <>
                     <Image
@@ -51,8 +51,8 @@ export default function AdminLoginPage() {
                 <p className="text-white/80 font-medium">Owner Portal</p>
             </div>
 
-            <Card className="w-full max-w-md bg-card border-primary/20 shadow-2xl">
-                <CardHeader className="text-center p-6 sm:p-8">
+            <Card className="w-full max-w-md bg-card border-primary/20 shadow-2xl opacity-100">
+                <CardHeader className="text-center p-6 sm:p-8 pb-4">
                     <CardTitle className="font-headline text-2xl sm:text-3xl">
                         Sign In
                     </CardTitle>
@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
                         Enter your admin credentials to manage your store.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 px-6 sm:px-8 pt-0 pb-6 sm:pb-8">
+                <CardContent className="space-y-6 px-6 sm:px-8 pt-0 pb-8">
                     <SignInForm onSwitchToSignUp={() => {}} showSignUpLink={false} />
                 </CardContent>
             </Card>

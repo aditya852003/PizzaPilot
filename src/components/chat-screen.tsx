@@ -252,7 +252,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, isThinking]);
 
   useEffect(() => {
     if (cart.length > 0 && !isThinking && messages[messages.length-1]?.type !== 'order_confirmation' && messages[messages.length-1]?.type !== 'suggestion' && !isConfirming) {
@@ -274,7 +274,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
     <div className="flex flex-col md:grid md:grid-cols-3 gap-6 p-4 md:p-6 h-full overflow-hidden">
       <div className="md:col-span-2 flex flex-col h-full min-h-0">
         <h2 className="font-headline text-2xl mb-4 px-2 shrink-0">Order Assistant</h2>
-        <Card className="flex-1 flex flex-col bg-card border-primary/20 shadow-lg overflow-hidden min-h-0">
+        <Card className="flex-1 flex flex-col bg-card border-primary/20 shadow-lg overflow-hidden min-h-0 opacity-100">
           <CardContent className="flex-1 p-0 relative min-h-0">
             <ScrollArea className="absolute inset-0 p-4" ref={scrollAreaRef}>
               <AnimatePresence>
@@ -292,7 +292,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                     )}
                   >
                     {message.type !== "user" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>}
-                    <div className={cn("max-w-md rounded-lg shadow-md bg-card", 
+                    <div className={cn("max-w-[85%] sm:max-w-md rounded-lg shadow-md", 
                         message.type === 'user' ? 'bg-primary text-primary-foreground px-4 py-2' : 'bg-secondary text-secondary-foreground border border-border',
                         message.type === 'suggestion' ? 'special-offer animate-spicy-pulse p-0 overflow-hidden w-full' : 'px-4 py-2',
                     )}>
@@ -357,13 +357,13 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
               </AnimatePresence>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-6 border-t bg-card shrink-0">
+          <CardFooter className="p-4 sm:p-6 border-t bg-card shrink-0 mb-2">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
                 await handleSendMessage();
               }}
-              className="flex w-full items-center gap-2 pt-2"
+              className="flex w-full items-center gap-2"
             >
               <Input
                 type="text"
@@ -391,7 +391,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                         Menu
                     </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md flex flex-col bg-card">
+                <SheetContent className="w-full sm:max-w-md flex flex-col bg-card opacity-100">
                     <SheetHeader className="px-6 pt-6 shrink-0">
                         <SheetTitle className="font-headline text-3xl">Our Menu</SheetTitle>
                         <SheetDescription>
@@ -409,7 +409,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                                                 const img = getImage(item.image);
                                                 const isOutOfStock = outOfStockItems.has(item.id);
                                                 return (
-                                                    <Card key={item.id} className={cn("overflow-hidden transition-all group border-primary/10", isOutOfStock ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-primary")} onClick={() => { if(!isOutOfStock) { addItemToOrder(item); setIsMenuOpen(false); }}}>
+                                                    <Card key={item.id} className={cn("overflow-hidden transition-all group border-primary/10 opacity-100", isOutOfStock ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-primary")} onClick={() => { if(!isOutOfStock) { addItemToOrder(item); setIsMenuOpen(false); }}}>
                                                         <div className="relative aspect-video">
                                                             {img && <Image src={img.imageUrl} alt={item.name} fill className={cn("object-cover group-hover:scale-105 transition-transform duration-300", isOutOfStock && "grayscale")} data-ai-hint={img.imageHint} />}
                                                             {isOutOfStock && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-white text-xs font-bold bg-destructive px-2 py-1 rounded">SOLD OUT</span></div>}
@@ -431,7 +431,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </Sheet>
         </div>
         
-        <Card className="bg-card border-primary/20 shadow-lg flex-1 flex flex-col min-h-0 overflow-hidden">
+        <Card className="bg-card border-primary/20 shadow-lg flex-1 flex flex-col min-h-0 overflow-hidden opacity-100">
           <CardContent className="p-0 flex-1 min-h-0 relative">
             <ScrollArea className="absolute inset-0 px-4">
                 {cart.length === 0 ? (
@@ -459,7 +459,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </ScrollArea>
           </CardContent>
           {cart.length > 0 && (
-            <CardFooter className="flex-col items-stretch p-4 border-t bg-secondary/30 shrink-0 gap-4">
+            <CardFooter className="flex-col items-stretch p-4 border-t bg-secondary/30 shrink-0 gap-4 mb-2">
                 <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
                     <span className="text-primary">₹{total.toFixed(2)}</span>

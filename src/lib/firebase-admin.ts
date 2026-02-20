@@ -17,6 +17,7 @@ function getAdminApp() {
   if (!projectId || !clientEmail || !privateKey) {
     // Return null instead of throwing to allow the build process to continue.
     // Logic inside route handlers will check for initialization.
+    console.warn('Firebase Admin environment variables missing. Admin SDK not initialized.');
     return null;
   }
 
@@ -38,7 +39,7 @@ export const adminAuth = {
   verifyIdToken: async (token: string) => {
     const app = getAdminApp();
     if (!app) {
-      throw new Error('Firebase Admin SDK not initialized. Set env variables in Vercel.');
+      throw new Error('Firebase Admin SDK not initialized. Set environment variables in Vercel settings.');
     }
     return admin.auth(app).verifyIdToken(token);
   }
@@ -48,7 +49,7 @@ export const adminDb = {
   collection: (path: string) => {
     const app = getAdminApp();
     if (!app) {
-      throw new Error('Firebase Admin SDK not initialized. Set env variables in Vercel.');
+      throw new Error('Firebase Admin SDK not initialized. Set environment variables in Vercel settings.');
     }
     return admin.firestore(app).collection(path);
   }
