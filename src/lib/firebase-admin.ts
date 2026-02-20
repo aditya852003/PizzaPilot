@@ -1,39 +1,59 @@
 import admin from 'firebase-admin';
 
-// This is the format for the service account key you can download from the Firebase console.
-// You'd typically store this in an environment variable.
-interface ServiceAccount {
-  type: string;
-  project_id: string;
-  private_key_id: string;
-  private_key: string;
-  client_email: string;
-  client_id: string;
-  auth_uri: string;
-  token_uri: string;
-  auth_provider_x509_cert_url: string;
-  client_x509_cert_url: string;
-}
-
 // Check if the app is already initialized to prevent re-initialization.
-if (!admin.apps.length) {
-  try {
-    // In a server environment like Vercel or Google Cloud Run,
-    // you can set these environment variables for auto-initialization.
-    const serviceAccount: ServiceAccount = {
-      project_id: process.env.FIREBASE_PROJECT_ID!,
-      client_email: process.env.FIREBASE_CLIENT_EMAIL!,
-      // The private key must be formatted correctly (replace \\n with \n).
-      private_key: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
-    } as ServiceAccount;
-    
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
-  } catch (e: any) {
-     console.error('Firebase Admin SDK initialization error:', e);
+function getAdminApp() {
+  if (!admin.apps.length) {
+    // Only initialize if we have the necessary environment variables.
+    // This avoids errors during the build step on platforms like Vercel.
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+    if (projectId && clientEmail && privateKey) {
+      try {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId,
+            clientEmail,
+            privateKey: privateKey.replace(/\\n/g, '\n'),
+          }),
+        });
+      } catch (e: any) {
+        console.error('Firebase Admin SDK initialization error:', e);
+      }
+    }
   }
+  return admin.apps.length ? admin.app() : null;
 }
 
-export const adminAuth = admin.auth();
-export const adminDb = admin.firestore();
+/**
+ * Lazy getter for Firebase Admin Auth.
+ * Returns the Auth instance or throws if the app couldn't be initialized.
+ */
+export const getAdminAuth = () => {
+  const app = getAdminApp();
+  if (!app) {
+    throw new Error('Firebase Admin SDK not initialized. Ensure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY are set.');
+  }
+  return admin.auth(app);
+};
+
+/**
+ * Lazy getter for Firebase Admin Firestore.
+ * Returns the Firestore instance or throws if the app couldn't be initialized.
+ */
+export const getAdminDb = () => {
+  const app = getAdminApp();
+  if (!app) {
+    throw new Error('Firebase Admin SDK not initialized. Ensure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY are set.');
+  }
+  return admin.firestore(app);
+};
+
+export const adminAuth = {
+    verifyIdToken: (token: string) => getAdminAuth().verifyIdToken(token)
+};
+
+export const adminDb = {
+    collection: (path: string) => getAdminDb().collection(path)
+};

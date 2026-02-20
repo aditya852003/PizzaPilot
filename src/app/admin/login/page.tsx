@@ -41,20 +41,23 @@ export default function AdminLoginPage() {
                 </>
             )}
 
-            <div className="flex items-center justify-center mb-8">
-                <PizzaPilotIcon className="w-12 h-12 mr-4" />
-                <h1 className="text-4xl font-headline text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>
-                    PizzaPilot
-                </h1>
+            <div className="flex flex-col items-center justify-center mb-8">
+                <div className="flex items-center mb-2">
+                    <PizzaPilotIcon className="w-12 h-12 mr-4" />
+                    <h1 className="text-4xl font-headline text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>
+                        PizzaPilot
+                    </h1>
+                </div>
+                <p className="text-white/80 font-medium">Owner Portal</p>
             </div>
 
-            <Card className="w-full max-w-md bg-card/100 border-primary/20 shadow-2xl">
+            <Card className="w-full max-w-md bg-card border-primary/20 shadow-2xl">
                 <CardHeader className="text-center p-6 sm:p-8">
                     <CardTitle className="font-headline text-2xl sm:text-3xl">
-                        Owner Dashboard
+                        Sign In
                     </CardTitle>
                     <CardDescription>
-                        Sign in to manage your restaurant.
+                        Enter your admin credentials to manage your store.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 px-6 sm:px-8 pt-0 pb-6 sm:pb-8">

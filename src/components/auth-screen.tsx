@@ -9,7 +9,7 @@ export default function AuthScreen() {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
 
   return (
-    <Card className="border-primary/20 shadow-2xl bg-card overflow-hidden">
+    <Card className="border-primary/20 shadow-2xl bg-card overflow-hidden w-full max-w-md mx-auto">
       <CardHeader className="text-center p-6 sm:p-8 pb-4">
         <CardTitle className="font-headline text-2xl sm:text-3xl">
           {authMode === 'signin' ? 'Welcome Aboard 🍕' : 'Create Your Account'}

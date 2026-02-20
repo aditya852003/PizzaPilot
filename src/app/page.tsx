@@ -7,7 +7,7 @@ import AuthScreen from "@/components/auth-screen";
 import ChatScreen from "@/components/chat-screen";
 import BillScreen from "@/components/bill-screen";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
+import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc } from 'firebase/firestore';
 import ProfileButton from "@/components/profile-button";
 import { useToast } from "@/hooks/use-toast";
@@ -63,11 +63,11 @@ export default function Home() {
   }, [firebaseUser, userProfile, isUserLoading, isProfileLoading, appState]);
 
   useEffect(() => {
-    if (activeUser && !address && !hasShownLocationPopup) {
+    if (activeUser && !address && !hasShownLocationPopup && appState === "ORDERING") {
       setIsLocationDialogOpen(true);
       setHasShownLocationPopup(true);
     }
-  }, [activeUser, address, hasShownLocationPopup]);
+  }, [activeUser, address, hasShownLocationPopup, appState]);
 
 
   const handlePlaceOrder = (finalCart: OrderItem[]) => {
