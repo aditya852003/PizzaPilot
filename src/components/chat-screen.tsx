@@ -357,7 +357,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
               </AnimatePresence>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-4 sm:p-6 border-t bg-card shrink-0 mb-2">
+          <CardFooter className="p-4 sm:p-8 border-t bg-card shrink-0 mb-2">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -459,7 +459,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </ScrollArea>
           </CardContent>
           {cart.length > 0 && (
-            <CardFooter className="flex-col items-stretch p-4 border-t bg-secondary/30 shrink-0 gap-4 mb-2">
+            <CardFooter className="flex-col items-stretch p-4 sm:p-8 border-t bg-secondary/30 shrink-0 gap-4 mb-2">
                 <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
                     <span className="text-primary">₹{total.toFixed(2)}</span>

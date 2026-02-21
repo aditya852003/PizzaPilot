@@ -55,12 +55,12 @@ export function SignInForm({ onSwitchToSignUp, showSignUpLink = true }: SignInFo
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs sm:text-sm">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="you@example.com" {...field} />
+                  <Input placeholder="you@example.com" {...field} className="h-9 sm:h-10" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[10px]" />
               </FormItem>
             )}
           />
@@ -68,30 +68,30 @@ export function SignInForm({ onSwitchToSignUp, showSignUpLink = true }: SignInFo
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs sm:text-sm">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input type="password" placeholder="••••••••" {...field} className="h-9 sm:h-10" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[10px]" />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full !mt-6 text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground">
-            <LogIn className="mr-2" /> Sign In
+          <Button type="submit" className="w-full !mt-6 h-10 sm:h-12 text-sm sm:text-lg bg-accent hover:bg-accent/90 text-accent-foreground">
+            <LogIn className="mr-2 h-4 w-4" /> Sign In
           </Button>
         </form>
       </Form>
       {showSignUpLink && (
-        <div className="mt-6 text-center text-sm">
+        <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm">
             <p className="text-muted-foreground">
               New to PizzaPilot?{' '}
               <Button variant="link" className="p-0 h-auto text-primary" onClick={onSwitchToSignUp}>
                 Sign Up
               </Button>
             </p>
-            <p className="mt-3">
-                <Link href="/admin/login" className="text-sm text-primary hover:underline transition-colors">
+            <p className="mt-2 sm:mt-3">
+                <Link href="/admin/login" className="text-xs text-primary hover:underline transition-colors">
                     Login as Admin
                 </Link>
             </p>

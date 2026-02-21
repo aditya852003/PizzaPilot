@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -74,12 +73,12 @@ export function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs sm:text-sm">Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your Name" {...field} />
+                  <Input placeholder="Your Name" {...field} className="h-9 sm:h-10" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[10px]" />
               </FormItem>
             )}
           />
@@ -87,12 +86,12 @@ export function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs sm:text-sm">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your Email" {...field} />
+                  <Input placeholder="Your Email" {...field} className="h-9 sm:h-10" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[10px]" />
               </FormItem>
             )}
           />
@@ -100,21 +99,21 @@ export function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs sm:text-sm">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input type="password" placeholder="••••••••" {...field} className="h-9 sm:h-10" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[10px]" />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full !mt-6 text-base py-3 bg-accent hover:bg-accent/90 text-accent-foreground">
-            <UserPlus /> Create Account
+          <Button type="submit" className="w-full !mt-6 h-10 sm:h-12 text-sm sm:text-base bg-accent hover:bg-accent/90 text-accent-foreground">
+            <UserPlus className="mr-2 h-4 w-4" /> Create Account
           </Button>
         </form>
       </Form>
-      <p className="mt-4 text-center text-sm text-muted-foreground">
+      <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground">
         Already have an account?{' '}
         <Button variant="link" className="p-0 h-auto text-primary" onClick={onSwitchToSignIn}>
           Sign In

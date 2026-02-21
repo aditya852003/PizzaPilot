@@ -15,8 +15,6 @@ function getAdminApp() {
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   if (!projectId || !clientEmail || !privateKey) {
-    // Return null instead of throwing to allow the build process to continue.
-    // Logic inside route handlers will check for initialization.
     console.warn('Firebase Admin environment variables missing. Admin SDK not initialized.');
     return null;
   }
