@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -70,7 +71,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
   const [thinkingMessage, setThinkingMessage] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const initialMessageSent = useRef(false);
 
@@ -248,11 +249,13 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
     }
   };
 
+  const scrollToBottom = useCallback(() => {
+    scrollEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
-    }
-  }, [messages, isThinking]);
+    scrollToBottom();
+  }, [messages, isThinking, scrollToBottom]);
 
   useEffect(() => {
     if (cart.length > 0 && !isThinking && messages[messages.length-1]?.type !== 'order_confirmation' && messages[messages.length-1]?.type !== 'suggestion' && !isConfirming) {
@@ -271,93 +274,96 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="flex flex-col md:grid md:grid-cols-3 gap-6 p-4 md:p-6 h-full overflow-hidden">
+    <div className="flex flex-col md:grid md:grid-cols-3 gap-6 p-4 md:p-6 h-full overflow-hidden min-h-0">
       <div className="md:col-span-2 flex flex-col h-full min-h-0">
         <h2 className="font-headline text-2xl mb-4 px-2 shrink-0">Order Assistant</h2>
-        <Card className="flex-1 flex flex-col bg-card border-primary/20 shadow-lg overflow-hidden min-h-0 opacity-100">
-          <CardContent className="flex-1 p-0 relative min-h-0">
-            <ScrollArea className="absolute inset-0 p-4" ref={scrollAreaRef}>
-              <AnimatePresence>
-                {messages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className={cn(
-                        "flex items-start gap-3 mb-4",
-                        message.type === "user" ? "justify-end" : "justify-start"
-                    )}
-                  >
-                    {message.type !== "user" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>}
-                    <div className={cn("max-w-[85%] sm:max-w-md rounded-lg shadow-md", 
-                        message.type === 'user' ? 'bg-primary text-primary-foreground px-4 py-2' : 'bg-secondary text-secondary-foreground border border-border',
-                        message.type === 'suggestion' ? 'special-offer animate-spicy-pulse p-0 overflow-hidden w-full' : 'px-4 py-2',
-                    )}>
-                        { message.type !== 'suggestion' && <p className="text-base whitespace-pre-line">{message.text}</p>}
-                        
-                        {message.type === 'suggestion' && message.suggestion?.item && (() => {
-                            const img = getImage(message.suggestion.item.image);
-                            return (
-                                <>
-                                    {img && (
-                                        <Image
-                                            src={img.imageUrl}
-                                            alt={message.suggestion.suggestion}
-                                            width={400}
-                                            height={200}
-                                            className="w-full h-32 object-cover"
-                                            data-ai-hint={img.imageHint}
-                                        />
-                                    )}
-                                    <div className="p-4">
-                                        <p className="font-bold text-lg flex items-center gap-2 text-white"><Sparkles size={18} /> How about some {message.suggestion.suggestion}?</p>
-                                        <p className="text-sm italic mt-1 text-white/90">{message.suggestion.reasoning}</p>
-                                        <div className="flex flex-col sm:flex-row gap-2 mt-3">
-                                            <Button size="sm" variant="outline" className="w-full sm:flex-1 bg-white/10 border-white/20 hover:bg-white/20 text-white" onClick={() => handleSuggestionResponse(true, message.suggestion.suggestion)}>
-                                                <ThumbsUp size={16}/> Yes, please!
-                                            </Button>
-                                            <Button size="sm" variant="ghost" className="w-full sm:flex-1 hover:bg-white/10 text-white" onClick={() => handleSuggestionResponse(false, message.suggestion.suggestion)}>
-                                                <ThumbsDown size={16}/> No, thanks
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </>
-                            )
-                        })()}
+        <Card className="flex-1 flex flex-col bg-card border-primary/20 shadow-lg overflow-hidden min-h-0">
+          <CardContent className="flex-1 p-0 relative min-h-0 flex flex-col">
+            <ScrollArea className="flex-1">
+              <div className="p-4">
+                <AnimatePresence>
+                  {messages.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className={cn(
+                          "flex items-start gap-3 mb-4",
+                          message.type === "user" ? "justify-end" : "justify-start"
+                      )}
+                    >
+                      {message.type !== "user" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>}
+                      <div className={cn("max-w-[85%] sm:max-w-md rounded-lg shadow-md", 
+                          message.type === 'user' ? 'bg-primary text-primary-foreground px-4 py-2' : 'bg-secondary text-secondary-foreground border border-border',
+                          message.type === 'suggestion' ? 'special-offer animate-spicy-pulse p-0 overflow-hidden w-full' : 'px-4 py-2',
+                      )}>
+                          { message.type !== 'suggestion' && <p className="text-base whitespace-pre-line">{message.text}</p>}
+                          
+                          {message.type === 'suggestion' && message.suggestion?.item && (() => {
+                              const img = getImage(message.suggestion.item.image);
+                              return (
+                                  <>
+                                      {img && (
+                                          <Image
+                                              src={img.imageUrl}
+                                              alt={message.suggestion.suggestion}
+                                              width={400}
+                                              height={200}
+                                              className="w-full h-32 object-cover"
+                                              data-ai-hint={img.imageHint}
+                                          />
+                                      )}
+                                      <div className="p-4">
+                                          <p className="font-bold text-lg flex items-center gap-2 text-white"><Sparkles size={18} /> How about some {message.suggestion.suggestion}?</p>
+                                          <p className="text-sm italic mt-1 text-white/90">{message.suggestion.reasoning}</p>
+                                          <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                                              <Button size="sm" variant="outline" className="w-full sm:flex-1 bg-white/10 border-white/20 hover:bg-white/20 text-white" onClick={() => handleSuggestionResponse(true, message.suggestion.suggestion)}>
+                                                  <ThumbsUp size={16}/> Yes, please!
+                                              </Button>
+                                              <Button size="sm" variant="ghost" className="w-full sm:flex-1 hover:bg-white/10 text-white" onClick={() => handleSuggestionResponse(false, message.suggestion.suggestion)}>
+                                                  <ThumbsDown size={16}/> No, thanks
+                                              </Button>
+                                          </div>
+                                      </div>
+                                  </>
+                              )
+                          })()}
 
-                        {message.type === 'order_confirmation' && (
-                           <div className="mt-2 border-t border-secondary-foreground/20 pt-2">
-                                <div className="flex flex-col sm:flex-row gap-2 mt-3">
-                                    <Button size="sm" variant="outline" className="w-full sm:flex-1 border-border hover:bg-accent/20" onClick={() => handleConfirmationResponse(true)}>
-                                        <Plus size={16}/> Add more
-                                    </Button>
-                                    <Button size="sm" className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleConfirmationResponse(false)}>
-                                        <ArrowRight size={16}/> Checkout
-                                    </Button>
-                                </div>
-                           </div>
-                        )}
-                    </div>
-                  </motion.div>
-                ))}
-                {isThinking && (
-                     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-3 mb-4 justify-start">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>
-                        <div className="bg-secondary rounded-lg px-4 py-3 flex items-center gap-2 border border-border">
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse [animation-delay:-0.3s]" />
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse [animation-delay:-0.15s]" />
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse" />
-                            <p className="text-muted-foreground pl-2 text-sm">{thinkingMessage}</p>
-                        </div>
+                          {message.type === 'order_confirmation' && (
+                             <div className="mt-2 border-t border-secondary-foreground/20 pt-2">
+                                  <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                                      <Button size="sm" variant="outline" className="w-full sm:flex-1 border-border hover:bg-accent/20" onClick={() => handleConfirmationResponse(true)}>
+                                          <Plus size={16}/> Add more
+                                      </Button>
+                                      <Button size="sm" className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleConfirmationResponse(false)}>
+                                          <ArrowRight size={16}/> Checkout
+                                      </Button>
+                                  </div>
+                             </div>
+                          )}
+                      </div>
                     </motion.div>
-                )}
-              </AnimatePresence>
+                  ))}
+                  {isThinking && (
+                       <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-3 mb-4 justify-start">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground"><ChefHat size={20} /></div>
+                          <div className="bg-secondary rounded-lg px-4 py-3 flex items-center gap-2 border border-border">
+                              <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse [animation-delay:-0.3s]" />
+                              <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse [animation-delay:-0.15s]" />
+                              <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse" />
+                              <p className="text-muted-foreground pl-2 text-sm">{thinkingMessage}</p>
+                          </div>
+                      </motion.div>
+                  )}
+                </AnimatePresence>
+                <div ref={scrollEndRef} className="h-4" />
+              </div>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-4 sm:p-8 border-t bg-card shrink-0 mb-2">
+          <CardFooter className="p-4 md:p-6 border-t bg-card shrink-0">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -391,7 +397,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                         Menu
                     </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md flex flex-col bg-card opacity-100">
+                <SheetContent className="w-full sm:max-w-md flex flex-col bg-card">
                     <SheetHeader className="px-6 pt-6 shrink-0">
                         <SheetTitle className="font-headline text-3xl">Our Menu</SheetTitle>
                         <SheetDescription>
@@ -409,7 +415,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
                                                 const img = getImage(item.image);
                                                 const isOutOfStock = outOfStockItems.has(item.id);
                                                 return (
-                                                    <Card key={item.id} className={cn("overflow-hidden transition-all group border-primary/10 opacity-100", isOutOfStock ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-primary")} onClick={() => { if(!isOutOfStock) { addItemToOrder(item); setIsMenuOpen(false); }}}>
+                                                    <Card key={item.id} className={cn("overflow-hidden transition-all group border-primary/10", isOutOfStock ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-primary")} onClick={() => { if(!isOutOfStock) { addItemToOrder(item); setIsMenuOpen(false); }}}>
                                                         <div className="relative aspect-video">
                                                             {img && <Image src={img.imageUrl} alt={item.name} fill className={cn("object-cover group-hover:scale-105 transition-transform duration-300", isOutOfStock && "grayscale")} data-ai-hint={img.imageHint} />}
                                                             {isOutOfStock && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-white text-xs font-bold bg-destructive px-2 py-1 rounded">SOLD OUT</span></div>}
@@ -431,9 +437,9 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </Sheet>
         </div>
         
-        <Card className="bg-card border-primary/20 shadow-lg flex-1 flex flex-col min-h-0 overflow-hidden opacity-100">
+        <Card className="bg-card border-primary/20 shadow-lg flex-1 flex flex-col min-h-0 overflow-hidden">
           <CardContent className="p-0 flex-1 min-h-0 relative">
-            <ScrollArea className="absolute inset-0 px-4">
+            <ScrollArea className="h-full px-4">
                 {cart.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center py-12 opacity-50">
                         <ShoppingCart size={48} className="mb-2" />
@@ -459,7 +465,7 @@ export default function ChatScreen({ user, onPlaceOrder, cart, setCart }: ChatSc
             </ScrollArea>
           </CardContent>
           {cart.length > 0 && (
-            <CardFooter className="flex-col items-stretch p-4 sm:p-8 border-t bg-secondary/30 shrink-0 gap-4 mb-2">
+            <CardFooter className="flex-col items-stretch p-4 md:p-6 border-t bg-secondary/30 shrink-0 gap-4">
                 <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
                     <span className="text-primary">₹{total.toFixed(2)}</span>

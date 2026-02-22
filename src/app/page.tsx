@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -109,7 +110,11 @@ export default function Home() {
     
     switch (appState) {
       case "AUTH":
-        return <AuthScreen />;
+        return (
+          <div className="flex flex-col items-center justify-center p-4">
+            <AuthScreen />
+          </div>
+        );
       case "ORDERING":
         if (!activeUser) return <AuthScreen />;
         return <ChatScreen user={activeUser} cart={cart} setCart={setCart} onPlaceOrder={handlePlaceOrder} />;
@@ -152,12 +157,12 @@ export default function Home() {
       </header>
       
       <div className={cn(
-        "relative w-full z-10 transition-all duration-300 flex-1 flex flex-col",
-        appState === 'AUTH' ? "justify-center items-center" : "justify-start"
+        "relative w-full z-10 transition-all duration-300 flex-1 flex flex-col items-center",
+        appState === 'AUTH' ? "justify-center" : "justify-start"
       )}>
         <div className={cn(
-          "relative mx-auto rounded-xl border-2 border-primary/20 bg-card shadow-2xl shadow-accent/20 overflow-hidden print:border-none print:shadow-none print:bg-card flex flex-col w-full",
-          appState === 'ORDERING' ? "max-w-5xl h-[calc(100vh-180px)]" : "max-w-md",
+          "relative mx-auto rounded-xl border-2 border-primary/20 bg-card shadow-2xl shadow-accent/20 overflow-hidden print:border-none print:shadow-none print:bg-card flex flex-col w-full transition-all duration-500",
+          appState === 'ORDERING' ? "max-w-6xl h-[calc(100vh-160px)] md:h-[calc(100vh-200px)]" : "max-w-md",
           appState === 'AUTH' && "my-auto"
         )}>
           {renderState()}
