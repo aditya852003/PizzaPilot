@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, Star, Shield, AlertTriangle } from 'lucide-react';
 import { PizzaPilotIcon } from '@/components/icons/pizza-pal-icon';
-import { addDoc, collection, Timestamp, query, orderBy, limit } from 'firebase/firestore';
-import { addMonths } from 'date-fns';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { Subscription } from '@/lib/types';
 
 const plans = [
@@ -38,7 +37,6 @@ export default function SubscribePage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
     
-    // Fetch the latest subscription to check if it has expired.
     const subscriptionsQuery = useMemoFirebase(() => {
         if (!firestore || !user) return null;
         return query(
@@ -53,13 +51,14 @@ export default function SubscribePage() {
 
     const hasExpired = useMemo(() => {
         if (!latestSubscription) return false;
-        // If status isn't active, or if the end date is in the past, it's considered expired for UI purposes.
         return latestSubscription.status !== 'active' || latestSubscription.current_period_end.toDate() < new Date();
     }, [latestSubscription]);
 
-
+    /**
+     * UPDATED: Calls the secure API route instead of writing directly to Firestore.
+     */
     const handleSubscribe = async (plan: typeof plans[0]) => {
-        if (!user || !firestore) {
+        if (!user) {
             toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to subscribe.' });
             return;
         }
@@ -67,21 +66,23 @@ export default function SubscribePage() {
         setIsLoading(plan.id);
 
         try {
-            const subCollectionRef = collection(firestore, 'users', user.uid, 'subscriptions');
-            
-            const startDate = new Date();
-            const endDate = addMonths(startDate, 1);
-            
-            const newSubscription = {
-                planId: plan.id,
-                planName: plan.name,
-                price: plan.price,
-                status: 'active',
-                current_period_end: Timestamp.fromDate(endDate),
-                startDate: Timestamp.fromDate(startDate),
-            };
+            // Get the ID token for authentication in the API
+            const idToken = await user.getIdToken();
 
-            await addDoc(subCollectionRef, newSubscription);
+            const response = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({ planId: plan.id }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || result.message || 'Subscription failed');
+            }
             
             toast({
                 title: "Subscription Activated!",
@@ -96,7 +97,7 @@ export default function SubscribePage() {
             toast({
                 variant: 'destructive',
                 title: 'Subscription Failed',
-                description: error.message || 'Could not process your subscription. Please try again.',
+                description: error.message || 'Could not process your subscription.',
             });
         } finally {
             setIsLoading(null);

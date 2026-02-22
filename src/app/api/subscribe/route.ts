@@ -1,64 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth, adminDb } from '@/lib/firebase-admin';
-import { addMonths, Timestamp } from 'firebase-admin/firestore';
+import { getAdminAuth, getAdminDb } from '@/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
+import { addMonths } from 'date-fns';
 
-const plans = [
-    { id: 'basic', name: 'Basic', price: 2500 },
-    { id: 'pro', name: 'Professional', price: 5000 },
+export const dynamic = 'force-dynamic';
+
+const AVAILABLE_PLANS = [
+  { id: 'basic', name: 'Basic', price: 2500 },
+  { id: 'pro', name: 'Professional', price: 5000 },
 ];
 
+/**
+ * PRODUCTION-SAFE SUBSCRIPTION HANDLER
+ * Uses Admin SDK exclusively for secure, server-side data mutations.
+ */
 export async function POST(req: NextRequest) {
-    try {
-        const authHeader = req.headers.get('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({ message: 'Unauthorized: Missing token' }, { status: 401 });
-        }
-        
-        const idToken = authHeader.split('Bearer ')[1];
-        
-        // Verify the user's token with Firebase Admin SDK
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
-        const uid = decodedToken.uid;
-        
-        const { planId } = await req.json();
-
-        const plan = plans.find(p => p.id === planId);
-
-        if (!plan) {
-            return NextResponse.json({ message: 'Invalid plan ID' }, { status: 400 });
-        }
-
-        // Generate a new subscription document
-        const subscriptionId = `sub_${Date.now()}`;
-        const subRef = adminDb.collection('users').doc(uid).collection('subscriptions').doc(subscriptionId);
-
-        const startDate = Timestamp.now();
-        const endDate = Timestamp.fromMillis(addMonths(startDate.toDate(), 1).getTime());
-
-        const newSubscription = {
-            planId: plan.id,
-            planName: plan.name,
-            price: plan.price,
-            status: 'active',
-            current_period_end: endDate,
-            startDate: startDate,
-        };
-
-        // Use the Admin SDK to write the subscription, bypassing client security rules.
-        await subRef.set(newSubscription);
-
-        return NextResponse.json({ message: 'Subscription successful', subscriptionId: subRef.id }, { status: 200 });
-
-    } catch (error: any) {
-        console.error('API subscription error:', error);
-        
-        if (error.code === 'auth/id-token-expired') {
-            return NextResponse.json({ message: 'Token expired. Please sign in again.' }, { status: 401 });
-        }
-        if (error.code === 'auth/argument-error') {
-             return NextResponse.json({ message: 'Invalid token.' }, { status: 401 });
-        }
-
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const idToken = authHeader.split('Bearer ')[1];
+    const auth = getAdminAuth();
+    const db = getAdminDb();
+
+    // 1. Verify Identity
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+
+    // 2. Validate Payload
+    const { planId } = await req.json();
+    const plan = AVAILABLE_PLANS.find(p => p.id === planId);
+
+    if (!plan) {
+      return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 });
+    }
+
+    // 3. Perform Mutation
+    const subRef = db.collection('users').doc(uid).collection('subscriptions').doc();
+    const startDate = new Date();
+    const endDate = addMonths(startDate, 1);
+
+    const subscriptionData = {
+      planId: plan.id,
+      planName: plan.name,
+      price: plan.price,
+      status: 'active',
+      current_period_end: FieldValue.serverTimestamp(), // Firestore will set this
+      // Actually, we want a real date for 'current_period_end'
+      current_period_end_date: endDate, 
+      startDate: FieldValue.serverTimestamp(),
+    };
+
+    // Override the timestamp logic for precise end date
+    const finalData = {
+      ...subscriptionData,
+      current_period_end: admin.firestore.Timestamp.fromDate(endDate),
+    };
+
+    await subRef.set(finalData);
+
+    return NextResponse.json({ 
+      success: true, 
+      subscriptionId: subRef.id 
+    }, { status: 200 });
+
+  } catch (error: any) {
+    console.error('Subscription API Error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to process subscription',
+      message: error.message 
+    }, { status: 500 });
+  }
 }

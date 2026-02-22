@@ -5,36 +5,37 @@ PizzaPilot is an AI-powered pizza ordering platform designed for a modern, conve
 ## 🚀 Application Flow
 
 ### 🍕 Consumer Experience
-1.  **Authentication**: Users start at a professionally centered login screen. New users can quickly create an account.
-2.  **Location Setup**: Once logged in, users are prompted to set a delivery address. This supports browser geolocation for a "one-tap" experience.
-3.  **AI Assistant**: The core ordering interface.
-    *   **Natural Language**: Users order by chatting: *"Add two pepperonis and a coke."*
-    *   **Menu QA**: Users can ask questions: *"Is the Paneer Tikka spicy?"* or *"What do you have under ₹300?"*
-    *   **Smart Upselling**: Adding a pizza triggers a GenAI suggestion for a relevant side or drink.
-4.  **Checkout**: A clean bill summary with tax calculation and payment method selection (Cash or Online).
+1.  **Authentication**: Users start at a professionally centered login screen.
+2.  **Location Setup**: Once logged in, users are prompted to set a delivery address using browser geolocation.
+3.  **AI Assistant**: Users order by chatting: *"Add two pepperonis and a coke."*
+4.  **Checkout**: A clean bill summary with tax calculation and payment method selection.
 5.  **Live Tracking**: A real-time status screen that updates as the restaurant processes the order.
 
 ### 👔 Owner Experience
-1.  **Admin Portal**: Accessible via `/admin/login` for users with the `owner` role.
-2.  **Subscription Gating**: The dashboard requires a subscription. 
-    *   **Basic**: Standard order and menu management.
-    *   **Professional**: Unlocks advanced Business Intelligence (Analytics).
-3.  **Order Management**: A real-time kanban-style board for accepting new orders and updating their status.
-4.  **Inventory Control**: Toggle item availability. Out-of-stock items are immediately hidden from the AI's ordering logic.
-5.  **Analytics**: (Pro Plan) Visualize sales trends, popular items, and delivery hotspots.
-6.  **Restaurant Settings**: Manage public metadata like the restaurant name and contact info.
+1.  **Admin Portal**: Accessible for users with the `owner` role.
+2.  **Subscription Gating**: Dashboard access requires a subscription (Basic or Professional).
+3.  **Order Management**: A real-time board for accepting and processing orders.
+4.  **Inventory Control**: Toggle item availability in real-time.
+5.  **Analytics**: (Pro Plan) Visualize sales trends and delivery hotspots.
 
 ## 🛠 Deployment (Vercel)
-To deploy this project on Vercel, you must add the following **Environment Variables**:
 
+To deploy successfully, you must add these **Environment Variables** in Vercel:
+
+### Client-Side (NEXT_PUBLIC_)
+*   `NEXT_PUBLIC_FIREBASE_API_KEY`: Your Firebase Web API Key.
+*   `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`: `your-project.firebaseapp.com`.
+*   `NEXT_PUBLIC_FIREBASE_PROJECT_ID`: Your Firebase Project ID.
+*   `NEXT_PUBLIC_FIREBASE_APP_ID`: Your Firebase Web App ID.
+
+### Server-Side (Private)
 *   `FIREBASE_PROJECT_ID`: Your Firebase Project ID.
-*   `FIREBASE_CLIENT_EMAIL`: The email of your Firebase Service Account.
-*   `FIREBASE_PRIVATE_KEY`: The full private key from your Service Account JSON.
-*   `GOOGLE_GENAI_API_KEY`: Your Gemini API Key from Google AI Studio.
+*   `FIREBASE_CLIENT_EMAIL`: The service account email.
+*   `FIREBASE_PRIVATE_KEY`: The full service account private key (including BEGIN/END markers).
+*   `GEMINI_API_KEY`: Your Google Gemini API Key.
 
 ## 🛠 Tech Stack
 - **Framework**: Next.js 15 (App Router)
 - **Styling**: Tailwind CSS & ShadCN UI
-- **Backend/Auth**: Firebase (Firestore & Authentication)
-- **AI**: Genkit with Google Gemini 2.5 Flash
-- **Icons**: Lucide React
+- **Backend/Auth**: Firebase Admin & Client SDKs
+- **AI**: Genkit with Google Gemini

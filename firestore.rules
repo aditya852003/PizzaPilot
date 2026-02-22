@@ -1,7 +1,7 @@
 /**
- * This ruleset has been refactored for clarity and robustness.
- * It grants specific access to 'owner' roles per collection and provides
- * secure rules for non-owner customers, avoiding recursive loops.
+ * PRODUCTION SECURITY RULES
+ * - Hardened to prevent client-side write access to sensitive collections.
+ * - Subscriptions can only be read by the owner, writes are restricted to Admin SDK (API).
  */
 rules_version = '2';
 service cloud.firestore {
@@ -16,8 +16,6 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // This function checks if the requesting user has the 'owner' role.
-    // The get() call is permitted by the rule on /users/{userId} below.
     function isRoleOwner() {
       return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner';
     }
@@ -25,67 +23,42 @@ service cloud.firestore {
     // == Rules per Collection ==
 
     match /users/{userId} {
-      // Owners can get any user profile. Users can get their own.
       allow get: if isRoleOwner() || isOwner(userId);
-      // Only owners can list all users.
       allow list: if isRoleOwner();
-      // A user can create their own profile upon signup. The role is set by trusted client-side logic.
       allow create: if isOwner(userId);
-      // An owner can update their own profile, and an admin can update any user profile,
-      // BUT neither can change the 'role' field after it has been created. This prevents admin escalation.
       allow update: if (isRoleOwner() || isOwner(userId)) && request.resource.data.role == resource.data.role;
-      // For now, disallow account deletion to prevent accidental data loss.
       allow delete: if false;
 
-      // Sub-collection rules for a user's own data
       match /subscriptions/{subscriptionId} {
-        // Users can read their own subscriptions. Owners can read any.
+        // Users can read their own subscriptions.
         allow get, list: if isOwner(userId) || isRoleOwner();
         
-        // Secure rule for creating a new subscription.
-        allow create: if isOwner(userId) && isRoleOwner()
-                      && request.resource.data.planId in ['basic', 'pro']
-                      && request.resource.data.status == 'active'
-                      && request.resource.data.current_period_end is timestamp
-                      && request.resource.data.startDate is timestamp
-                      && (
-                        (request.resource.data.planId == 'basic' && request.resource.data.price == 2500) ||
-                        (request.resource.data.planId == 'pro' && request.resource.data.price == 5000)
-                      );
-                      
-        // Disallow direct updates or deletes to prevent tampering.
-        // Renewals/upgrades should create new records or be handled by a secure backend function.
-        allow update, delete: if false;
+        // SECURITY UPGRADE: Direct client writes are now forbidden.
+        // Subscriptions MUST be created via the /api/subscribe route (Admin SDK).
+        allow write: if false;
       }
+      
       match /checkout_sessions/{sessionId} {
         allow read, write: if isOwner(userId) || isRoleOwner();
       }
     }
 
     match /orders/{orderId} {
-      // Owners can perform any read/write operation on any order.
       allow read, write: if isRoleOwner();
-      
-      // Customers have more restricted access to their own orders.
       allow create: if isOwner(request.resource.data.userId);
       allow get: if isOwner(resource.data.userId);
       allow list: if isSignedIn() && request.query.where[0][2] == request.auth.uid;
-      
-      allow delete: if false; // Disallow direct deletion for all
-      allow update: if isOwner(resource.data.userId) && request.resource.data.status == 'cancelled'; // Allow customers to cancel
+      allow delete: if false;
+      allow update: if isOwner(resource.data.userId) && request.resource.data.status == 'cancelled';
     }
 
     match /inventory/{itemId} {
-      // Anyone signed-in can read inventory status.
       allow read: if isSignedIn();
-      // Only owners can change inventory status.
       allow write: if isRoleOwner();
     }
     
     match /metadata/{docId} {
-       // Anyone signed-in can read restaurant metadata.
        allow read: if isSignedIn();
-       // Only owners can change metadata.
        allow write: if isRoleOwner();
     }
   }
